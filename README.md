@@ -8,14 +8,22 @@ Example:
 
 ```
 var company = new Company();
-var salary = company.Add<Manager>("John").GetSalary(DateTime.Today); 
+var salary = company.Add<Manager>("John", DateTime.Today).GetSalary(DateTime.Today); 
 Console.WriteLine(salary);
 
-company.Add<Employee>("Jack"); 
-company.Add<Salesman>("James");
+company.Add<Employee>("Jack", DateTime.Today); 
+company.Add<Salesman>("James", DateTime.Today);
 
 var payroll = company.GetTotalPayroll(DateTime.Today);
 Console.WriteLine(payroll);
+```
+
+DateTime.Today can be skipped:
+
+```
+var company = new Company();
+var salary = company.Add<Manager>("John").GetSalary(); 
+Console.WriteLine(salary);
 ```
 
 # Review
