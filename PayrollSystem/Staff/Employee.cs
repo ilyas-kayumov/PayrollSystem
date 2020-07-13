@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PayrollSystem.Staff
 {
@@ -8,6 +9,9 @@ namespace PayrollSystem.Staff
         public const decimal DefaultBaseRate = 1000;
         private string name;
         private decimal baseRate = DefaultBaseRate;
+
+        private readonly IList<Supervisor> supervisors = new List<Supervisor>();
+        public IEnumerable<Supervisor> Supervisors => supervisors;
 
         public string Name
         {
@@ -75,6 +79,59 @@ namespace PayrollSystem.Staff
         private int GetYears(DateTime date)
         {
             return ((int)(date - HireDate).TotalDays) / DaysInYear;
+        }
+
+        public T AddSupervisor<T>(T supervisor) where T : Supervisor
+        {
+            if (supervisor == null)
+            {
+                throw new ArgumentNullException(nameof(supervisor));
+            }
+
+            if (supervisor == this)
+            {
+                throw new InvalidOperationException("The supervisor can not be the supervisor for himself");
+            }
+
+            supervisors.Add(supervisor);
+
+            if (!supervisor.HasSubordinate(this))
+            {
+                supervisor.AddSubordinate(this);
+            }
+
+            return supervisor;
+        }
+
+        public T RemoveSupervisor<T>(T supervisor) where T : Supervisor
+        {
+            supervisors.Remove(supervisor);
+            supervisor.RemoveSubordinate(this);
+
+            return supervisor;
+        }
+
+        public bool HasSupervisor(Supervisor supervisor)
+        {
+            return supervisors.Contains(supervisor);
+        }
+
+        public IEnumerable<Employee> GetAllSupervisors()
+        {
+            return GetAllSupervisors(this);
+        }
+
+        private static IEnumerable<Employee> GetAllSupervisors(Employee employee)
+        {
+            foreach (var supervisor in employee.Supervisors)
+            {
+                yield return supervisor;
+
+                foreach (var s in GetAllSupervisors(supervisor))
+                {
+                    yield return s;
+                }
+            }
         }
     }
 }
