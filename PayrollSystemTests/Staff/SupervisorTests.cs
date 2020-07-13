@@ -70,7 +70,7 @@ namespace PayrollSystemTests.Staff
             topManager.AddSubordinate(manager);
             ceo.AddSubordinate(manager);
 
-            Assert.Throws<InvalidOperationException>(() => ceo.AddSubordinate(manager));
+            Assert.Throws<InvalidOperationException>(() => manager.AddSubordinate(ceo));
         }
 
         [Test]
