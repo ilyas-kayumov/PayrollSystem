@@ -41,6 +41,34 @@ namespace PayrollSystemTests
         }
 
         [Test]
+        public void GetTotalPayroll_Salesman_TotalSalary()
+        {
+            // Arrange
+            var company = new Company();
+            var john = company.Add<Manager>("John");
+
+            var jack = company.Add<Salesman>("John");
+            john.AddSubordinate(jack);
+
+            var james = company.Add<Salesman>("James");
+            jack.AddSubordinate(james);
+
+            var jo = company.Add<Salesman>("Jo");
+            jack.AddSubordinate(jo);
+
+            var jastin = company.Add<Manager>("Jastin");
+            jo.AddSubordinate(jastin);
+
+            var totalSalary = company.Employees.Sum(e => e.GetSalary());
+
+            // Act
+            var payroll = company.GetTotalPayroll();
+
+            // Assert
+            Assert.AreEqual(totalSalary, payroll);
+        }
+
+        [Test]
         public void Add_3Employees_3()
         {
             var company = new Company();

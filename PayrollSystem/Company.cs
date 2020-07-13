@@ -17,7 +17,8 @@ namespace PayrollSystem
 
         public decimal GetTotalPayroll(DateTime date)
         {
-            return Employees.Sum(e => e.GetSalary(date));
+            var salaries = new Dictionary<int, decimal>();
+            return Employees.Sum(e => e.GetSalary(date, salaries));
         }
 
         public T Add<T>(string name) where T : Employee

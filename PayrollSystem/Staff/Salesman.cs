@@ -20,7 +20,22 @@ namespace PayrollSystem.Staff
 
         public override decimal GetSalary(DateTime date)
         {
-            return base.GetSalary(date) + EmployeesBonusRate * GetAllEmployees().Sum(e => e.GetSalary(date));
+            return GetSalary(date, new Dictionary<int, decimal>());
+        }
+
+        public override decimal GetSalary(DateTime date, IDictionary<int, decimal> salaries)
+        {
+            if (!salaries.ContainsKey(Id))
+            {
+                salaries.Add(Id, GetSalaryPrivate(date, salaries));
+            }
+
+            return salaries[Id];
+        }
+
+        private decimal GetSalaryPrivate(DateTime date, IDictionary<int, decimal> salaries)
+        {
+            return base.GetSalary(date) + EmployeesBonusRate * GetAllEmployees().Sum(e => e.GetSalary(date, salaries));
         }
 
         public IEnumerable<Employee> GetAllEmployees()

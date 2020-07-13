@@ -9,9 +9,12 @@ namespace PayrollSystem.Staff
         public const decimal DefaultBaseRate = 1000;
         private string name;
         private decimal baseRate = DefaultBaseRate;
-
         private readonly IList<Supervisor> supervisors = new List<Supervisor>();
+        private static int counter;
+
         public IEnumerable<Supervisor> Supervisors => supervisors;
+
+        public int Id { get; private set; }
 
         public string Name
         {
@@ -53,6 +56,7 @@ namespace PayrollSystem.Staff
             Name = name;
             HireDate = hireDate;
             BaseRate = DefaultBaseRate;
+            Id = counter++;
         }
 
         public Employee(string name, DateTime hireDate, decimal baseRate) : this(name, hireDate)
@@ -63,6 +67,16 @@ namespace PayrollSystem.Staff
         public decimal GetSalary()
         {
             return GetSalary(DateTime.Today);
+        }
+
+        public virtual decimal GetSalary(DateTime date, IDictionary<int, decimal> salaries)
+        {
+            if (!salaries.ContainsKey(Id))
+            {
+                salaries.Add(Id, GetSalary(date));
+            }
+
+            return salaries[Id];
         }
 
         public virtual decimal GetSalary(DateTime date)
@@ -106,7 +120,11 @@ namespace PayrollSystem.Staff
         public T RemoveSupervisor<T>(T supervisor) where T : Supervisor
         {
             supervisors.Remove(supervisor);
-            supervisor.RemoveSubordinate(this);
+
+            if (supervisor.HasSubordinate(this))
+            {
+                supervisor.RemoveSubordinate(this);
+            }
 
             return supervisor;
         }

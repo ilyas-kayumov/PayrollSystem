@@ -50,7 +50,11 @@ namespace PayrollSystem.Staff
         public T RemoveSubordinate<T>(T employee) where T: Employee
         {
             employees.Remove(employee);
-            employee.RemoveSupervisor(this);
+
+            if (employee.HasSupervisor(this))
+            {
+                employee.RemoveSupervisor(this);
+            }
 
             return employee;
         }
